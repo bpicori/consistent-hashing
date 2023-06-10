@@ -16,15 +16,15 @@ type ServerMetadata = {
 
 type ClusterData = Record<ServerName, Key[]>;
 
-type ClusterStatus = {
-  servers: ServerName[];
+export interface ClusterStatus {
+  servers: ServerMetadata[];
   data: ClusterData;
-};
+}
 
 export class Cluster {
   private nodesState: BST<number, ServerMetadata>;
   private data: ClusterData;
-  private servers: ServerName[];
+  private servers: ServerMetadata[];
 
   constructor() {
     this.nodesState = new BST();
@@ -35,13 +35,14 @@ export class Cluster {
   public registerServer(serverName: ServerName): void {
     const modulo = this.getModulo(serverName);
 
-    if (this.servers.includes(serverName)) {
-      throw new Error(`Server ${serverName} already exists`);
+    const exists = this.servers.find((s) => s.name === serverName);
+    if (exists) {
+      return;
     }
 
     this.nodesState.insert(modulo, { name: serverName, modulo });
     this.data[serverName] = [];
-    this.servers.push(serverName);
+    this.servers.push({ name: serverName, modulo });
   }
 
   public removeServer(serverName: ServerName): void {
@@ -55,7 +56,7 @@ export class Cluster {
     const serverData = [...this.data[serverName]];
     this.nodesState.remove(modulo);
     delete this.data[serverName];
-    this.servers = this.servers.filter((s) => s !== serverName);
+    this.servers = this.servers.filter((s) => s.name !== serverName);
 
     for (const key of serverData) {
       this.insertKey(key.value);
