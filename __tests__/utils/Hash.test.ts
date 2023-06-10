@@ -1,25 +1,42 @@
-import { hash } from "../../src/utils/Hash.js";
+import { Hash, HashValue } from "../../src/utils/Hash.js";
+import * as crypto from "crypto";
 
-describe("hash", () => {
-  it("should hash a string to a valid hexadecimal value", () => {
-    const key = "Hello, world!";
-    const hashedValue = hash(key);
-    const isValidHexadecimal = /^[0-9a-fA-F]+$/.test(hashedValue);
-    expect(isValidHexadecimal).toBe(true);
+describe("Hash", () => {
+  it("should hash string correctly", () => {
+    const key = "test";
+    const hash = Hash.hash(key);
+
+    const cryptoHash = crypto.createHash("sha256");
+    cryptoHash.update(key);
+    const hashBuffer = cryptoHash.digest();
+    const hashDecimal = BigInt("0x" + hashBuffer.toString("hex"));
+
+    expect(hash.value).toEqual(hashDecimal);
   });
 
-  it("should produce different hashes for different input strings", () => {
-    const key1 = "String 1";
-    const key2 = "String 2";
-    const hashedValue1 = hash(key1);
-    const hashedValue2 = hash(key2);
-    expect(hashedValue1).not.toBe(hashedValue2);
+  it("should give different hashes for different keys", () => {
+    const hash1 = Hash.hash("test1");
+    const hash2 = Hash.hash("test2");
+
+    expect(hash1.value).not.toEqual(hash2.value);
   });
 
-  it("should produce the same hash for the same input string", () => {
-    const key = "Hello, world!";
-    const hashedValue1 = hash(key);
-    const hashedValue2 = hash(key);
-    expect(hashedValue1).toBe(hashedValue2);
+  it("should give same hash for the same key", () => {
+    const hash1 = Hash.hash("test");
+    const hash2 = Hash.hash("test");
+
+    expect(hash1.value).toEqual(hash2.value);
+  });
+});
+
+describe("HashValue", () => {
+  it("should convert to number correctly", () => {
+    const hashValue = new HashValue(BigInt(123));
+    expect(hashValue.toNumber()).toEqual(123);
+  });
+
+  it("should convert to string correctly", () => {
+    const hashValue = new HashValue(BigInt(123));
+    expect(hashValue.toString()).toEqual("123");
   });
 });
