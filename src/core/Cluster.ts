@@ -40,6 +40,7 @@ export class Cluster {
       return;
     }
 
+    // TODO: recalibrate
     this.nodesState.insert(modulo, { name: serverName, modulo });
     this.data[serverName] = [];
     this.servers.push({ name: serverName, modulo });
@@ -58,6 +59,7 @@ export class Cluster {
     delete this.data[serverName];
     this.servers = this.servers.filter((s) => s.name !== serverName);
 
+    // TODO: not the optimal way to do this
     for (const key of serverData) {
       this.insertKey(key.value);
     }
