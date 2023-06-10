@@ -4,7 +4,7 @@
   "description": "Consistent hashing implementation in TypeScript",
   "type": "module",
   "engines": {
-    "node": ">= "
+    "node": ">= 16.0.0"
   },
   "devDependencies": {
     "@types/jest": "~29.5",
@@ -38,8 +38,5 @@
   "license": "MIT",
   "dependencies": {
     "tslib": "~2.5"
-  },
-  "volta": {
-    "node": "18.12.1"
   }
 }
