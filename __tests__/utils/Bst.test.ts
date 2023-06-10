@@ -74,4 +74,55 @@ describe("BST", () => {
       expect(bst.findNode("A1")?.value).toBe("A1");
     });
   });
+
+  describe("successor", () => {
+    let bst: BST<number>;
+    beforeEach(() => {
+      bst = new BST();
+      bst.insert(1);
+      bst.insert(3);
+      bst.insert(2);
+      bst.insert(5);
+    });
+
+    it("should return null if the tree is empty", () => {
+      bst = new BST();
+      expect(bst.findSuccessor(1)).toBeNull();
+    });
+
+    it("should return the next highest node, if not found", () => {
+      // expect(bst.findSuccessor(2)?.value).toBe(3);
+      // expect(bst.findSuccessor(4)?.value).toBe(5);
+      expect(bst.findSuccessor(0)?.value).toBe(1);
+    });
+
+    it("should return null if the node is the highest", () => {
+      expect(bst.findSuccessor(6)).toBeNull();
+    });
+  });
+
+  describe("findMinimumNode", () => {
+    let bst: BST<number>;
+    beforeEach(() => {
+      bst = new BST();
+      bst.insert(5);
+      bst.insert(2);
+      bst.insert(3);
+    });
+
+    it("should return the minimum node", () => {
+      expect(bst.findMinimumNode().value).toEqual(2);
+    });
+
+    it("should throw an error if the tree is empty", () => {
+      bst = new BST();
+      expect(() => bst.findMinimumNode()).toThrow("Tree is empty");
+    });
+
+    it("should return the minimum node if the tree has only one node", () => {
+      bst = new BST();
+      bst.insert(1);
+      expect(bst.findMinimumNode().value).toEqual(1);
+    });
+  });
 });

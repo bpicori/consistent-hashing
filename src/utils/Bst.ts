@@ -1,21 +1,19 @@
-export class Node<T, M = unknown> {
+export class Node<T, M> {
   public left: Node<T, M> | null = null;
   public right: Node<T, M> | null = null;
-  public value: T;
-  public metadata?: M;
+
+  constructor(public value: T, public metadata: M) {}
 }
 
 export class BST<T, M = unknown> {
-  private root: Node<T> | null;
+  private root: Node<T, M> | null;
 
   constructor() {
     this.root = null;
   }
 
   public insert(value: T, metadata?: M): void {
-    const newNode: Node<T> = new Node();
-    newNode.value = value;
-    newNode.metadata = metadata;
+    const newNode: Node<T, M> = new Node(value, metadata || ({} as M));
 
     if (this.root === null) {
       this.root = newNode;
@@ -28,15 +26,44 @@ export class BST<T, M = unknown> {
     this.root = this.removeNode(this.root, value);
   }
 
-  public getRootNode(): Node<T> | null {
+  public getRootNode(): Node<T, M> | null {
     return this.root;
   }
 
-  public findNode(value: T): Node<T> | null {
+  public findNode(value: T): Node<T, M> | null {
     return this.findNodeRecursive(this.root, value);
   }
 
-  private insertNode(node: Node<T>, newNode: Node<T>): void {
+  public findSuccessor(value: T): Node<T, M> | null {
+    let currentNode = this.root;
+    let successor: Node<T, M> | null = null;
+
+    while (currentNode !== null) {
+      if (value < currentNode.value) {
+        successor = currentNode;
+        currentNode = currentNode.left;
+      } else if (value > currentNode.value) {
+        currentNode = currentNode.right;
+      } else {
+        if (currentNode.right !== null) {
+          const minNode = this.findMinNode(currentNode.right);
+          return minNode;
+        }
+        break;
+      }
+    }
+
+    return successor;
+  }
+
+  public findMinimumNode(): Node<T, M> {
+    if (this.root === null) {
+      throw new Error("Tree is empty");
+    }
+    return this.findMinNode(this.root);
+  }
+
+  private insertNode(node: Node<T, M>, newNode: Node<T, M>): void {
     if (newNode.value < node.value) {
       if (node.left === null) {
         node.left = newNode;
@@ -52,7 +79,7 @@ export class BST<T, M = unknown> {
     }
   }
 
-  private removeNode(node: Node<T> | null, value: T): Node<T> | null {
+  private removeNode(node: Node<T, M> | null, value: T): Node<T, M> | null {
     if (node === null) {
       return null;
     } else if (value < node.value) {
@@ -90,10 +117,10 @@ export class BST<T, M = unknown> {
     }
   }
 
-  private findNodeRecursive<T>(
-    root: Node<T, unknown> | null,
+  private findNodeRecursive<T, M>(
+    root: Node<T, M> | null,
     value: T
-  ): Node<T, unknown> | null {
+  ): Node<T, M> | null {
     if (root === null) {
       return null;
     } else if (value < root.value) {
@@ -105,7 +132,7 @@ export class BST<T, M = unknown> {
     }
   }
 
-  private findMinNode(right: Node<T>): Node<T> {
+  private findMinNode(right: Node<T, M>): Node<T, M> {
     if (right.left === null) {
       return right;
     } else {
